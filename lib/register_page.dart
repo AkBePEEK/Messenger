@@ -1,51 +1,34 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 
-class LoginPage extends StatefulWidget {
-  const LoginPage({super.key});
-
-  @override
-  _LoginPageState createState() => _LoginPageState();
+void main() {
+  runApp(MyApp());
 }
 
-class _LoginPageState extends State<LoginPage> {
+class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      debugShowCheckedModeBanner: false,
+      home: RegistrationScreen(),
+    );
+  }
+}
+
+class RegistrationScreen extends StatefulWidget {
+  const RegistrationScreen({super.key});
+
+  @override
+  _RegistrationScreenState createState() => _RegistrationScreenState();
+}
+
+class _RegistrationScreenState extends State<RegistrationScreen> {
   final _formKey = GlobalKey<FormState>();
   bool _isPasswordVisible = false;
-
-  // Controllers for email and password fields
-  final TextEditingController _emailController = TextEditingController();
-  final TextEditingController _passwordController = TextEditingController();
-
-  // Firebase Auth instance
-  final FirebaseAuth _auth = FirebaseAuth.instance;
-
-  // Function to handle login
-  Future<void> _login() async {
-    if (_formKey.currentState!.validate()) {
-      try {
-        // Attempt to log in with email and password
-        UserCredential userCredential = await _auth.signInWithEmailAndPassword(
-          email: _emailController.text.trim(),
-          password: _passwordController.text.trim(),
-        );
-
-        // Check if login was successful
-        if (userCredential.user != null) {
-          if (kDebugMode) {
-            print("Logged in successfully!");
-          }
-          Navigator.pushReplacementNamed(context, '/home'); // Navigate to home screen
-        }
-      } catch (e) {
-        // Handle login errors
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text("Login failed: ${e.toString()}")),
-        );
-      }
-    }
-  }
+  bool _isConfirmPasswordVisible = false;
 
   @override
   Widget build(BuildContext context) {
@@ -58,7 +41,7 @@ class _LoginPageState extends State<LoginPage> {
           onPressed: () => Navigator.pop(context),
         ),
         title: Text(
-          "Log In",
+          "Create Account",
           style: TextStyle(color: Colors.white),
         ),
       ),
@@ -75,10 +58,32 @@ class _LoginPageState extends State<LoginPage> {
                 style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
               ),
               SizedBox(height: 8),
+              Text(
+                "Create Account to keep exploring amazing destinations around the world!",
+                style: TextStyle(fontSize: 16, color: Colors.grey),
+              ),
+              SizedBox(height: 24),
+
+              // Full Name Field
+              TextFormField(
+                decoration: InputDecoration(
+                  prefixIcon: Icon(Icons.person),
+                  labelText: "Enter your full name",
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                ),
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return "Please enter your full name";
+                  }
+                  return null;
+                },
+              ),
+              SizedBox(height: 16),
 
               // Email Field
               TextFormField(
-                controller: _emailController,
                 decoration: InputDecoration(
                   prefixIcon: Icon(Icons.email),
                   labelText: "Enter your email address",
@@ -101,13 +106,14 @@ class _LoginPageState extends State<LoginPage> {
 
               // Password Field
               TextFormField(
-                controller: _passwordController,
                 obscureText: !_isPasswordVisible,
                 decoration: InputDecoration(
                   prefixIcon: Icon(Icons.lock),
                   suffixIcon: IconButton(
                     icon: Icon(
-                      _isPasswordVisible ? Icons.visibility : Icons.visibility_off,
+                      _isPasswordVisible
+                          ? Icons.visibility
+                          : Icons.visibility_off,
                     ),
                     onPressed: () {
                       setState(() {
@@ -130,11 +136,49 @@ class _LoginPageState extends State<LoginPage> {
                   return null;
                 },
               ),
+              SizedBox(height: 16),
+
+              // Confirm Password Field
+              TextFormField(
+                obscureText: !_isConfirmPasswordVisible,
+                decoration: InputDecoration(
+                  prefixIcon: Icon(Icons.lock),
+                  suffixIcon: IconButton(
+                    icon: Icon(
+                      _isConfirmPasswordVisible
+                          ? Icons.visibility
+                          : Icons.visibility_off,
+                    ),
+                    onPressed: () {
+                      setState(() {
+                        _isConfirmPasswordVisible = !_isConfirmPasswordVisible;
+                      });
+                    },
+                  ),
+                  labelText: "Enter confirm password",
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                ),
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return "Please confirm your password";
+                  }
+                  return null;
+                },
+              ),
               SizedBox(height: 24),
 
-              // Log In Button
+              // Create Account Button
               ElevatedButton(
-                onPressed: _login,
+                onPressed: () {
+                  if (_formKey.currentState!.validate()) {
+                    // Perform sign-up logic here
+                    if (kDebugMode) {
+                      print("Account created successfully!");
+                    }
+                  }
+                },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Color(0xFF3b9678),
                   shape: RoundedRectangleBorder(
@@ -145,26 +189,26 @@ class _LoginPageState extends State<LoginPage> {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text("Log in"),
+                    Text("Create Account"),
                     Icon(Icons.arrow_forward),
                   ],
                 ),
               ),
               SizedBox(height: 16),
 
-              // Don't have an account? Sign up
+              // Already have an account? Sign in
               Row(
                 children: [
                   Text(
-                    "Don't have an account? ",
+                    "Already have an account? ",
                     style: TextStyle(fontSize: 14),
                   ),
                   GestureDetector(
                     onTap: () {
-                      Navigator.pushReplacementNamed(context, '/signup');
+                      Navigator.pushReplacementNamed(context, '/login');
                     },
                     child: Text(
-                      "Sign up",
+                      "Sign in",
                       style: TextStyle(
                         fontSize: 14,
                         color: Color(0xFF3b9678),
@@ -181,7 +225,7 @@ class _LoginPageState extends State<LoginPage> {
                 text: TextSpan(
                   style: TextStyle(fontSize: 12, color: Colors.grey),
                   children: [
-                    TextSpan(text: "By logging in, you agree to our "),
+                    TextSpan(text: "By creating an account, you agree to our "),
                     TextSpan(
                       text: "Terms & Conditions",
                       style: TextStyle(
@@ -190,9 +234,8 @@ class _LoginPageState extends State<LoginPage> {
                       ),
                       recognizer: TapGestureRecognizer()
                         ..onTap = () {
-                          if (kDebugMode) {
-                            print("Terms & Conditions");
-                          }
+                          // Navigate to Terms & Conditions page
+                          print("Terms & Conditions");
                         },
                     ),
                     TextSpan(text: " and agree to "),
@@ -204,9 +247,8 @@ class _LoginPageState extends State<LoginPage> {
                       ),
                       recognizer: TapGestureRecognizer()
                         ..onTap = () {
-                          if (kDebugMode) {
-                            print("Privacy Policy");
-                          }
+                          // Navigate to Privacy Policy page
+                          print("Privacy Policy");
                         },
                     ),
                   ],
