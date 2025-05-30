@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">socialmediaapp</string>
+
+    <!-- Firebase options -->
+    <string name="project_id">media-app-e122c</string>
+    <string name="storage_bucket">media-app-e122c.firebasestorage.app</string>
+    <string name="api_key">AIzaSyCpgXliWMNkMMf2ttBWroau-bl0xbjlMa8</string>
+</resources>

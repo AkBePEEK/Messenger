@@ -1,50 +1,11 @@
 import 'package:flutter/material.dart';
 
-import 'models/conversation_model.dart';
+import '../models/conversation_model.dart';
 
 class MessagesScreen extends StatelessWidget {
   // Sample data for conversations
   List<Conversation> conversations = [
-    Conversation(
-      senderName: "John Smith",
-      messagePreview: "Hi! How are you doing?",
-      timestamp: "2 min ago",
-    ),
-    Conversation(
-      senderName: "Savannah Nguyen",
-      messagePreview: "Haha that's terrifying 😱",
-      timestamp: "5 min ago",
-    ),
-    Conversation(
-      senderName: "Albert Flores",
-      messagePreview: "aww",
-      timestamp: "Yesterday",
-    ),
-    Conversation(
-      senderName: "Marvin McKinney",
-      messagePreview: "Wow, this is really epic",
-      timestamp: "2 days ago",
-    ),
-    Conversation(
-      senderName: "Devon Lane",
-      messagePreview: "Haha oh man",
-      timestamp: "2 days ago",
-    ),
-    Conversation(
-      senderName: "Theresa Webb",
-      messagePreview: "How are you?",
-      timestamp: "3 days ago",
-    ),
-    Conversation(
-      senderName: "Darlene Robertson",
-      messagePreview: "I'll be there in 2 mins",
-      timestamp: "4 days ago",
-    ),
-    Conversation(
-      senderName: "Jenny Wilson",
-      messagePreview: "perfect!",
-      timestamp: "a week ago",
-    ),
+
   ];
 
   MessagesScreen({super.key});

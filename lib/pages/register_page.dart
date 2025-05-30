@@ -1,34 +1,77 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-
-void main() {
-  runApp(MyApp());
-}
-
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      home: RegistrationScreen(),
-    );
-  }
-}
+import 'package:firebase_auth/firebase_auth.dart';
 
 class RegistrationScreen extends StatefulWidget {
   const RegistrationScreen({super.key});
 
   @override
-  _RegistrationScreenState createState() => _RegistrationScreenState();
+  _RegistrationScreenState createState() {
+    return _RegistrationScreenState();
+  }
 }
 
 class _RegistrationScreenState extends State<RegistrationScreen> {
   final _formKey = GlobalKey<FormState>();
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
+  final TextEditingController _confirmPasswordController = TextEditingController();
   bool _isPasswordVisible = false;
   bool _isConfirmPasswordVisible = false;
+
+  Future<void> _registerUser(BuildContext context) async {
+    final String email = _emailController.text.trim();
+    final String password = _passwordController.text.trim();
+    final String confirmPassword = _confirmPasswordController.text.trim();
+
+    if (_formKey.currentState!.validate()) {
+      if (password != confirmPassword) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text("Passwords do not match")),
+        );
+        return;
+      }
+
+      try {
+        UserCredential userCredential =
+        await FirebaseAuth.instance.createUserWithEmailAndPassword(
+          email: email,
+          password: password,
+        );
+
+        if (userCredential.user != null) {
+          // Registration successful
+          if (kDebugMode) {
+            print("Account created successfully!");
+          }
+          Navigator.pushReplacementNamed(context, '/home');
+        }
+      } on FirebaseAuthException catch (e) {
+        String errorMessage = 'An unknown error occurred';
+
+        if (e.code == 'weak-password') {
+          errorMessage = 'The password provided is too weak.';
+        } else if (e.code == 'email-already-in-use') {
+          errorMessage = 'The account already exists for that email.';
+        } else if (e.code == 'invalid-email') {
+          errorMessage = 'The email address is invalid.';
+        } else if (e.code == 'network-request-failed') {
+          errorMessage = 'Network error. Please check your connection.';
+        } else if (e.code == 'operation-not-allowed') {
+          errorMessage = 'Email/password accounts are not enabled in Firebase Console.';
+        }
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(errorMessage)),
+        );
+      } catch (e) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text("Unexpected error: $e")),
+        );
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -173,17 +216,12 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
               ElevatedButton(
                 onPressed: () {
                   if (_formKey.currentState!.validate()) {
-                    // Perform sign-up logic here
-                    if (kDebugMode) {
-                      print("Account created successfully!");
-                    }
+                    _registerUser(context);
                   }
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Color(0xFF3b9678),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8),
-                  ),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
                   minimumSize: Size(double.infinity, 50),
                 ),
                 child: Row(
@@ -235,7 +273,9 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                       recognizer: TapGestureRecognizer()
                         ..onTap = () {
                           // Navigate to Terms & Conditions page
-                          print("Terms & Conditions");
+                          if (kDebugMode) {
+                            print("Terms & Conditions");
+                          }
                         },
                     ),
                     TextSpan(text: " and agree to "),
@@ -248,7 +288,9 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                       recognizer: TapGestureRecognizer()
                         ..onTap = () {
                           // Navigate to Privacy Policy page
-                          print("Privacy Policy");
+                          if (kDebugMode) {
+                            print("Privacy Policy");
+                          }
                         },
                     ),
                   ],

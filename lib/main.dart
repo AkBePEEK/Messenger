@@ -1,10 +1,16 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:social_media_app/pages/login_page.dart';
+import 'package:social_media_app/pages/register_page.dart';
+import 'firebase_options.dart';
+import 'home_page.dart';
 import 'models/Wrapper.dart';
 
 void main() async{
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp();
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
   runApp(SocialMediaApp());
 }
 
@@ -38,7 +44,16 @@ class _SocialMediaAppState extends State<SocialMediaApp> {
         useMaterial3: true,
         brightness: Brightness.dark,
       ),
-      home: Wrapper(), // Use the Wrapper widget
+      initialRoute: '/',
+      routes: {
+        '/': (context) => Wrapper(),
+        '/login': (context) => LoginPage(),
+        '/signup': (context) => RegistrationScreen(),
+        '/home': (context) => Home(changeTheme: (bool useLightMode) {  },),
+      },
+      onUnknownRoute: (_) => MaterialPageRoute(
+        builder: (context) => LoginPage(),
+      ),
     );
   }
 }

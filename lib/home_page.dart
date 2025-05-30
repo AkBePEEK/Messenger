@@ -1,7 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:social_media_app/message_page.dart';
-import 'package:social_media_app/profile_page.dart';
+import 'package:social_media_app/pages/message_page.dart';
+import 'package:social_media_app/pages/profile_page.dart';
 
 class Home extends StatefulWidget {
   const Home({super.key, required this.changeTheme});
